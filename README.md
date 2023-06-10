@@ -1,6 +1,6 @@
-# GAI (Git + OpenAI)
+# GAI (Git + AI)
 
-GAI (Git + OpenAI) is a command-line interface (CLI) tool written in Rust that utilizes OpenAI models to generate informative commit messages from a `git diff` by reading from its standard input (stdin). It combines the power of Git with advanced language models to automate the process of creating meaningful and concise commit messages based on the changes made to your Git repository.
+GAI (Git + AI) is a command-line interface (CLI) tool written in Rust that utilizes OpenAI models to generate informative commit messages from a `git diff` by reading from its standard input (stdin). It combines the power of Git with advanced language models to automate the process of creating meaningful and concise commit messages based on the changes made to your Git repository.
 
 ## Features
 
@@ -73,6 +73,22 @@ To use GAI, follow these steps:
    ```
 
    This will create a new commit with the generated commit message.
+
+An alternative is to define a shell alias that brings everything together:
+
+```
+alias gaic='git diff --cached | gai | git commit -F -'
+```
+
+But if this feels too much of rush, and you'd like to confirm the commit message manually, you can use [`ays`](https://github.com/dpecos/ays) like this:
+
+```
+alias gaic='git diff --cached | gai | ays --preview "Use this message for the commit?" | git commit -F -'
+```
+
+And this is how your workflow would look like:
+
+![gai](./docs/gai.gif)
 
 ## Contributing
 
