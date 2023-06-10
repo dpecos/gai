@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .to_uppercase()
                 .starts_with(&prefix.to_uppercase())
             {
-                generated_commit_message = &generated_commit_message[prefix.len()..].trim();
+                generated_commit_message = generated_commit_message[prefix.len()..].trim();
             }
         }
 
