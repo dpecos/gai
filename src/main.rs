@@ -39,10 +39,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .await?;
 
         let json_response: serde_json::Value = response.json().await?;
-        let mut generated_commit_message =
-            json_response["choices"][0]["text"].as_str().unwrap_or("");
+        let mut generated_commit_message = json_response["choices"][0]["text"]
+            .as_str()
+            .unwrap_or("")
+            .trim();
 
-        let possible_prefixes = vec!["Commit message:", "Commit:", "Commit message:"];
+        let possible_prefixes = vec!["Commit message:", "Commit:", "Message:"];
         for prefix in possible_prefixes {
             if generated_commit_message
                 .to_uppercase()
