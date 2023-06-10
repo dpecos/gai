@@ -4,7 +4,7 @@ use std::io;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut prompt = String::from(
-        "Generate a git commit message (do not print anything else than the message) that describes the changes from the following git diff:\n\n",
+        "Generate a git commit message that describes the changes from the following git diff:\n\n",
     );
 
     let mut git_diff = String::new();
@@ -39,7 +39,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .await?;
 
         let json_response: serde_json::Value = response.json().await?;
-        let generated_commit_message = json_response["choices"][0]["text"].as_str().unwrap_or("");
+        let mut generated_commit_message =
+            json_response["choices"][0]["text"].as_str().unwrap_or("");
+
+        let possible_prefixes = vec!["Commit message:", "Commit:", "Commit message:"];
+        for prefix in possible_prefixes {
+            if generated_commit_message
+                .to_uppercase()
+                .starts_with(&prefix.to_uppercase())
+            {
+                generated_commit_message = &generated_commit_message[prefix.len()..].trim();
+            }
+        }
 
         println!("{}", generated_commit_message);
 
