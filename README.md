@@ -1,6 +1,6 @@
-# GAI (Git Auto-Information)
+# GAI (Git AI)
 
-GAI (Git Auto-Information) is a command-line interface (CLI) tool written in Rust that generates a commit message from a `git diff` by reading from its standard input (stdin). It helps automate the process of creating informative and concise commit messages based on the changes made to your Git repository.
+GAI (Git AI) is a command-line interface (CLI) tool written in Rust that generates a commit message from a `git diff` by reading from its standard input (stdin). It helps automate the process of creating informative and concise commit messages based on the changes made to your Git repository.
 
 ## Features
 
