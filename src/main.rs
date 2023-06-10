@@ -4,7 +4,7 @@ use std::io;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut prompt = String::from(
-        "Generate a git commit message that describes the changes from the following git diff:\n\n",
+        "Generate a git commit message (do not print anything else than the message) that describes the changes from the following git diff:\n\n",
     );
 
     let mut git_diff = String::new();
