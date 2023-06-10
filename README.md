@@ -1,12 +1,12 @@
-# GAI (Git AI)
+# GAI (Git + OpenAI)
 
-GAI (Git AI) is a command-line interface (CLI) tool written in Rust that generates a commit message from a `git diff` by reading from its standard input (stdin). It helps automate the process of creating informative and concise commit messages based on the changes made to your Git repository.
+GAI (Git + OpenAI) is a command-line interface (CLI) tool written in Rust that utilizes OpenAI models to generate informative commit messages from a `git diff` by reading from its standard input (stdin). It combines the power of Git with advanced language models to automate the process of creating meaningful and concise commit messages based on the changes made to your Git repository.
 
 ## Features
 
-- Automatically generates commit messages based on `git diff` input.
-- Uses a smart algorithm to analyze the changes and generate descriptive commit messages.
-- Helps to save time and effort in writing commit messages manually.
+- Uses OpenAI models to analyze the `git diff` and generate descriptive commit messages.
+- Seamlessly integrates with Git to streamline the commit process.
+- Saves time and effort in writing commit messages manually.
 
 ## Getting Started
 
@@ -41,6 +41,14 @@ To install GAI, follow these steps:
 
    This will build GAI and install it into your system.
 
+### Configuration
+
+GAI requires an OpenAI API key to run. Before using GAI, make sure to set the `OPENAI_API_KEY` environment variable with your OpenAI API key.
+
+```shell
+export OPENAI_API_KEY=<your-openai-api-key>
+```
+
 ### Usage
 
 To use GAI, follow these steps:
@@ -53,7 +61,7 @@ To use GAI, follow these steps:
    git diff | gai
    ```
 
-   GAI will process the input from `git diff` and generate a commit message based on the changes.
+   GAI will process the input from `git diff` using OpenAI models and generate a commit message based on the changes.
 
    **Note:** GAI reads from the standard input (stdin), so make sure to pipe the `git diff` output correctly.
 
