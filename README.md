@@ -21,6 +21,14 @@ Before using GAI, ensure that you have the following prerequisites installed on 
 
 To install GAI, follow these steps:
 
+### From crates.io
+
+```
+cargo install gai
+```
+
+### From code
+
 1. Clone the GAI repository:
 
    ```shell
