@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if git_diff.len() > 0 {
         prompt.push_str(&git_diff);
 
-        let token = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY not set");
+        let token = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY env variable not set");
         let auth_header = format!("Bearer {}", token);
 
         let client = reqwest::Client::new();
@@ -54,9 +54,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
 
-        println!("{}", generated_commit_message);
-
-        return Ok(());
+        if generated_commit_message.len() == 0 {
+            return Err("Could not generate a description for the provided diff".into());
+        } else {
+            println!("{}", generated_commit_message);
+            return Ok(());
+        }
     } else {
         return Err("No git diff provided".into());
     }
