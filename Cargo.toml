@@ -1,6 +1,6 @@
 [package]
 name = "gai"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Automatically generate commit messages from a git diff using AI"
 authors = ["Daniel Pecos Martinez <me@danielpecos.com>"]
