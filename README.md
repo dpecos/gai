@@ -69,6 +69,8 @@ To use GAI, follow these steps:
    git diff | gai
    ```
 
+   (Note: you can also pass the diff from your staged changes with `git diff --cached`)
+
    GAI will process the input from `git diff` using OpenAI models and generate a commit message based on the changes.
 
    **Note:** GAI reads from the standard input (stdin), so make sure to pipe the `git diff` output correctly.
