@@ -45,7 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .unwrap_or("")
             .trim();
 
-        let possible_prefixes = vec!["Commit message:", "Commit:", "Message:"];
+        let possible_prefixes = vec!["Commit message:", "Commit:", "Message:", "git commit -m \""];
         for prefix in possible_prefixes {
             if generated_commit_message
                 .to_uppercase()
@@ -58,6 +58,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if generated_commit_message.len() == 0 {
             return Err("Could not generate a description for the provided diff".into());
         } else {
+            if generated_commit_message.ends_with("\"")
+                || generated_commit_message.ends_with("'")
+                || generated_commit_message.ends_with(".")
+            {
+                generated_commit_message =
+                    &generated_commit_message[..generated_commit_message.len() - 1];
+            }
             println!("{}", generated_commit_message);
             return Ok(());
         }
