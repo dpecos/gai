@@ -3,9 +3,9 @@ use std::io;
 use tokio::main;
 
 fn read_stdin() -> Result<String, Box<dyn std::error::Error>> {
-    let mut prompt = String::from(
-        "Generate a git commit message that describes the changes from the following git diff:\n\n",
-    );
+    let mut prompt =
+        "Generate a git commit message that describes the changes from the following git diff:\n\n"
+            .to_string();
 
     let mut git_diff = String::new();
     loop {
@@ -69,24 +69,24 @@ async fn query_openai(prompt: String) -> Result<String, Box<dyn std::error::Erro
         openai_response = &openai_response[..openai_response.len() - 1];
     }
 
-    Ok(String::from(openai_response))
+    Ok(openai_response.to_string())
 }
 
 #[main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-  let prompt = read_stdin()?;
+    let prompt = read_stdin()?;
 
-  let openai_response = query_openai(prompt).await;
+    let openai_response = query_openai(prompt).await;
 
-  return match openai_response {
-    Ok(generated_commit_message) => {
-      if generated_commit_message.len() == 0 {
-        return Err("Could not generate a description for the provided diff".into());
-      } else {
-        println!("{}", generated_commit_message);
-        return Ok(());
-      }
-    },
-    Err(_) => Err("Could not connect to OpenAI".into())
-  };
+    return match openai_response {
+        Ok(generated_commit_message) => {
+            if generated_commit_message.len() == 0 {
+                return Err("Could not generate a description for the provided diff".into());
+            } else {
+                println!("{}", generated_commit_message);
+                return Ok(());
+            }
+        }
+        Err(_) => Err("Could not connect to OpenAI".into()),
+    };
 }
