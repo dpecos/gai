@@ -17,11 +17,10 @@ fn read_stdin() -> Result<String, Box<dyn std::error::Error>> {
 
     if git_diff.len() > 0 {
         prompt.push_str(&git_diff);
+        Ok(prompt)
     } else {
-        return Err("No git diff provided".into());
+        Err("No git diff provided".into())
     }
-
-    Ok(prompt)
 }
 
 async fn query_openai(prompt: String) -> Result<String, Box<dyn std::error::Error>> {
@@ -78,15 +77,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let openai_response = query_openai(prompt).await;
 
-    return match openai_response {
+    match openai_response {
         Ok(generated_commit_message) => {
             if generated_commit_message.len() == 0 {
-                return Err("Could not generate a description for the provided diff".into());
+                Err("Could not generate a description for the provided diff".into())
             } else {
                 println!("{}", generated_commit_message);
-                return Ok(());
+                Ok(())
             }
         }
         Err(_) => Err("Could not connect to OpenAI".into()),
-    };
+    }
 }
