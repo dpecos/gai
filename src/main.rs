@@ -1,8 +1,8 @@
 use serde_json::json;
 use std::io;
+use tokio::main;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn read_stdin() -> Result<String, Box<dyn std::error::Error>> {
     let mut prompt = String::from(
         "Generate a git commit message that describes the changes from the following git diff:\n\n",
     );
@@ -17,58 +17,76 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if git_diff.len() > 0 {
         prompt.push_str(&git_diff);
-
-        let token = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY env variable not set");
-        let auth_header = format!("Bearer {}", token);
-
-        let client = reqwest::Client::new();
-        let response = client
-            .post("https://api.openai.com/v1/completions")
-            .header("Authorization", auth_header)
-            .json(&json!({
-                "model": "text-davinci-003",
-                "prompt": prompt,
-                "temperature": 0.0,
-                "max_tokens": 300,
-                "top_p": 1.0,
-                "frequency_penalty": 0.0,
-                "presence_penalty": 0.0,
-                "stream": false,
-                "stop": ["\n\n\n"],
-            }))
-            .send()
-            .await?;
-
-        let json_response: serde_json::Value = response.json().await?;
-        let mut generated_commit_message = json_response["choices"][0]["text"]
-            .as_str()
-            .unwrap_or("")
-            .trim();
-
-        let possible_prefixes = vec!["Commit message:", "Commit:", "Message:", "git commit -m \""];
-        for prefix in possible_prefixes {
-            if generated_commit_message
-                .to_uppercase()
-                .starts_with(&prefix.to_uppercase())
-            {
-                generated_commit_message = generated_commit_message[prefix.len()..].trim();
-            }
-        }
-
-        if generated_commit_message.len() == 0 {
-            return Err("Could not generate a description for the provided diff".into());
-        } else {
-            if generated_commit_message.ends_with("\"")
-                || generated_commit_message.ends_with("'")
-                || generated_commit_message.ends_with(".")
-            {
-                generated_commit_message =
-                    &generated_commit_message[..generated_commit_message.len() - 1];
-            }
-            println!("{}", generated_commit_message);
-            return Ok(());
-        }
     } else {
         return Err("No git diff provided".into());
     }
+
+    Ok(prompt)
+}
+
+async fn query_openai(prompt: String) -> Result<String, Box<dyn std::error::Error>> {
+    let token = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY env variable not set");
+    let auth_header = format!("Bearer {}", token);
+
+    let client = reqwest::Client::new();
+    let response = client
+        .post("https://api.openai.com/v1/completions")
+        .header("Authorization", auth_header)
+        .json(&json!({
+          "model": "text-davinci-003",
+          "prompt": prompt,
+          "temperature": 0.0,
+          "max_tokens": 300,
+          "top_p": 1.0,
+          "frequency_penalty": 0.0,
+          "presence_penalty": 0.0,
+          "stream": false,
+          "stop": ["\n\n\n"],
+        }))
+        .send()
+        .await?;
+
+    let json_response: serde_json::Value = response.json().await?;
+    let mut openai_response = json_response["choices"][0]["text"]
+        .as_str()
+        .unwrap_or("")
+        .trim();
+
+    let possible_prefixes = vec!["Commit message:", "Commit:", "Message:", "git commit -m \""];
+    for prefix in possible_prefixes {
+        if openai_response
+            .to_uppercase()
+            .starts_with(&prefix.to_uppercase())
+        {
+            openai_response = openai_response[prefix.len()..].trim();
+        }
+    }
+
+    if openai_response.ends_with("\"")
+        || openai_response.ends_with("'")
+        || openai_response.ends_with(".")
+    {
+        openai_response = &openai_response[..openai_response.len() - 1];
+    }
+
+    Ok(String::from(openai_response))
+}
+
+#[main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+  let prompt = read_stdin()?;
+
+  let openai_response = query_openai(prompt).await;
+
+  return match openai_response {
+    Ok(generated_commit_message) => {
+      if generated_commit_message.len() == 0 {
+        return Err("Could not generate a description for the provided diff".into());
+      } else {
+        println!("{}", generated_commit_message);
+        return Ok(());
+      }
+    },
+    Err(_) => Err("Could not connect to OpenAI".into())
+  };
 }
