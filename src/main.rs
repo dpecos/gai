@@ -46,6 +46,11 @@ async fn query_openai(prompt: String) -> Result<String, Box<dyn std::error::Erro
         .await?;
 
     let json_response: serde_json::Value = response.json().await?;
+
+    if json_response["error"] != serde_json::Value::Null {
+        return Err(json_response["error"]["message"].as_str().unwrap().into());
+    }
+
     let mut openai_response = json_response["choices"][0]["text"]
         .as_str()
         .unwrap_or("")
@@ -86,6 +91,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(())
             }
         }
-        Err(_) => Err("Could not connect to OpenAI".into()),
+        Err(err) => Err(format!("Could not connect to OpenAI: {}", err).into()),
     }
 }
